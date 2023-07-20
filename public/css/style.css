@@ -1,0 +1,109 @@
+:root {
+  --container-xxs-width: 100%;
+  --container-xs-width: 540px;
+  --container-sm-width: 720px;
+  --container-md-width: 960px;
+  --container-lg-width: 1140px;
+  --container-xl-width: 1320px;
+  --container-xxl-width: 1500px;
+
+  --breakpoint-xxs: 320px;
+  --breakpoint-xs: 540px;
+  --breakpoint-sm: 720px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1140px;
+  --breakpoint-xl: 1320px;
+  --breakpoint-xxl: 1500px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-wrapper {
+  min-height: 300px;
+  min-width: 300px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+}
+
+.login-wrapper form {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+form .form-group {
+  margin-bottom: 20px;
+}
+
+form .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+form .form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form .form-group input:focus {
+  outline: none;
+  border-color: #333;
+}
+
+form .form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: url("../images/arrow-down.svg") no-repeat right center;
+  background-size: 20px;
+}
+
+form .btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+form .btn:hover {
+  background: #555;
+}
+
+form .btn:hover, form .btn:not(:hover) {
+  transition: ease-in-out 0.3s all;
+  -webkit-transition: ease-in-out 0.3s all;
+  -moz-transition: ease-in-out 0.3s all;
+  -ms-transition: ease-in-out 0.3s all;
+  -o-transition: ease-in-out 0.3s all;
+}
+
