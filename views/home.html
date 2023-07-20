@@ -50,6 +50,13 @@
         // validate the auth credentials
         if ( usernameField.value === "admin" && passwordField.value === "admin" ) {
           // if valid, send post request to auth route
+
+          const data = {
+            username: usernameField.value,
+            password: passwordField.value,
+            room: roomSelector.value
+          }
+
           fetch('/auth', {
             method: 'POST',
             headers: {
@@ -61,6 +68,18 @@
               room: roomSelector.value
             })
           })
+          .then(res => res.json())
+          .then(data => {
+            console.log(data);
+            // if successful, redirect to chat page
+            if ( data.success ) {
+              window.location.href = '/chat';
+            } else {
+              // if not successful, show an error message
+              alert('Invalid credentials');
+            }
+          })
+
         } else {
           // if invalid, show an error message
           alert('Invalid credentials');

@@ -60,20 +60,35 @@ app.get('/chat', (req, res) => {
 
 // define a authentiaction route
 app.post('/auth', (req, res) => {
-  // check if the user is authorized
-  console.log(req.body)
-  if ( req.body.username === 'admin' && req.body.password === 'admin' ) {
-    // set a cookie
-    console.log(req.body.username)
-    res.cookie('auth', true);
+
+  if ( !req.body.username || req.body.username === '' ) {
+    return {
+      code: 400,
+      message: 'Username is required'
+    }
+  }
+
+  if ( !req.body.password || req.body.password === '' ) {
+    return {
+      code: 400,
+      message: 'Password is required'
+    }
+  }
+
+  res.cookie('auth', true);
     
-    res.cookie('user', {
-      username: req.body.username,
-      room: req.body.room
-    });
-    res.redirect('/chat');
-  } else {
-    res.redirect('/');
+  res.cookie('user', {
+    username: req.body.username,
+    room: req.body.room
+  });
+
+  // get auth cookie value
+  const authCookie = req.cookies.auth;
+  console.log(authCookie)
+  return {
+    code: 200,
+    message: 'User authenticated successfully',
+    cookie: authCookie
   }
 });
 
