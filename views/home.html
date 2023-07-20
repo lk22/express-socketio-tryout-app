@@ -48,7 +48,7 @@
         e.preventDefault();
         console.log('form submitted');
         // validate the auth credentials
-        if ( usernameField.value === "admin" && passwordField.value === "admin" ) {
+        if ( usernameField.value.length > 0 || passwordField.value.length > 0 ) {
           // if valid, send post request to auth route
 
           const data = {
@@ -73,6 +73,7 @@
             console.log(data);
             // if successful, redirect to chat page
             if ( data.status.success ) {
+              window.localStorage.setItem('auth', JSON.stringify(data));
               window.location.href = '/chat';
             } else {
               // if not successful, show an error message

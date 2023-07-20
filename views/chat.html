@@ -1,28 +1,68 @@
 <%- include('partials/head.html') -%>
-<ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" aria-label="chat message"/>
-      <button>Send</button>
-    </form>
+<%= user.username %>
+
+<main>
+  <div id="chat-wrapper">
+    <!-- 
+
+    -->
+    <ul id="messages"></ul>
+        <form id="form" action="">
+          <input id="input" autocomplete="off" aria-label="chat message"/>
+          <button>Send</button>
+        </form>
+  </div>
+</main>
+
+    <button class="logout-btn">Logout</button>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
 
+      const {user} = JSON.parse(window.localStorage.getItem('auth'));
+      console.log({user})
+
       const messages = document.getElementById('messages');
       const form = document.getElementById('form');
       const input = document.getElementById('input');
+      const logoutBtn = document.querySelector('.logout-btn');
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
+        console.log(input.value)
         if (input.value) {
           socket.emit('chat message', input.value);
           input.value = '';
         }
       })
 
+      logoutBtn.addEventListener('click', function(e) {
+        fetch('/logout', {
+          method: 'POST',
+        }).then((response) => {
+          if ( response.status.success ) {
+            window.localStorage.removeItem('auth');
+            window.location.href = '/';
+          } else {
+            alert('Something went wrong, could not log out');
+          }
+        })
+      })
+
       socket.on('chat message', function(msg) {
-        let item = document.createElement('li');
-        item.textContent = msg;
+
+        let item = document.createElement('div');
+        item.classList.add('message-item');
+        let username = document.createElement('span');
+        username.classList.add('username');
+        username.textContent = user.username;
+        let messageItem = document.createElement('div');
+        messageItem.classList.add('message');
+        messageItem.textContent = msg;
+        
+        item.appendChild(username);
+        item.appendChild(messageItem);
+
         messages.appendChild(item)
         window.scrollTo(0, document.body.scrollHeight)
       })

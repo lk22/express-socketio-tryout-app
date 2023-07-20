@@ -40,6 +40,12 @@ app.use(function(req, res, next) {
 // set the view engine to ejs
 app.set('view engine', 'html');
 
+const users = [
+  { username: 'admin', password: 'admin', nickname: 'Admin' },
+  { username: 'John Doe', password: 'user', nickname: 'johndoe'},
+  { username: 'Jane Doe', password: 'user', nickname: 'janedoe'}
+]
+
 // define a route handler for the default home page
 app.get('/', (req, res) => {
   res.render('home', {
@@ -51,27 +57,24 @@ app.get('/chat', (req, res) => {
   if (!req.cookies.auth) {
     res.redirect('/');
   }
+  console.log(req.cookies)
   res.render('chat', {
     title: 'Chat',
     room: req.cookies.user.room,
-    username: req.cookies.user.username
+    user: {
+      username: req.cookies.user.username
+    }
   })
 })
 
 // define a authentiaction route
 app.post('/auth', (req, res) => {
+  const user = users.find(user => user.username === req.body.username || user.password === req.body.password);
 
-  if ( !req.body.username || req.body.username === '' ) {
+  if ( ! user ) {
     res.send({
       code: 400,
-      message: 'Username is required'
-    })
-  }
-
-  if ( !req.body.password || req.body.password === '' ) {
-    res.send({
-      code: 400,
-      message: 'Password is required'
+      message: 'User not found'
     })
   }
 
@@ -91,19 +94,35 @@ app.post('/auth', (req, res) => {
       success: true
     },
     message: 'User authenticated successfully',
-    cookie: authCookie
+    cookie: authCookie,
+    room: req.body.room,
+    user: {
+      username: req.body.username
+    }
   })
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('auth');
+  res.clearCookie('user');
+  res.send({
+    code: 200,
+    status: {
+      success: true
+    },
+    message: 'User logged out successfully'
+  })
+})
+
 io.on('connection', (socket) => {
   // console.log(socket)
-  // console.log('User: ' + socket.id + ' ' + 'connected');
+  console.log('User: ' + socket.id + ' ' + 'connected');
 
-  // socket.on('disconnect', () => {
-  //   console.log('User: ' + socket.id + ' ' + 'disconnected');
-  // })
+  socket.on('disconnect', () => {
+    console.log('User: ' + socket.id + ' ' + 'disconnected');
+  })
 
-  socket.on('chat message room' + socket.room, msg => {
+  socket.on('chat message', msg => {
     console.log("Newest message:", msg)
     io.emit('chat message', msg);
   });
