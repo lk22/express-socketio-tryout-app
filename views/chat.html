@@ -1,12 +1,20 @@
 <%- include('partials/head.html') -%>
-<%= user.username %>
+<strong><%= user.username %></strong>
 
 <main>
   <div id="chat-wrapper">
     <!-- 
 
     -->
-    <ul id="messages"></ul>
+    <ul id="messages">
+      <!-- loop through messages in ejs-->
+      <% messages.forEach(message => { %>
+        <div class="message-item">
+          <span class="username"><%= message.username %></span>
+          <div class="message"><%= message.message.message %></div>
+        </div>
+      <% }) %>
+    </ul>
         <form id="form" action="">
           <input id="input" autocomplete="off" aria-label="chat message"/>
           <button>Send</button>
@@ -27,11 +35,13 @@
       const input = document.getElementById('input');
       const logoutBtn = document.querySelector('.logout-btn');
 
+      
+
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         console.log(input.value)
         if (input.value) {
-          socket.emit('chat message', input.value);
+          socket.emit('chat message', {message: input.value, username: user.username});
           input.value = '';
         }
       })
@@ -55,10 +65,10 @@
         item.classList.add('message-item');
         let username = document.createElement('span');
         username.classList.add('username');
-        username.textContent = user.username;
+        username.textContent = msg.username;
         let messageItem = document.createElement('div');
         messageItem.classList.add('message');
-        messageItem.textContent = msg;
+        messageItem.textContent = msg.message;
         
         item.appendChild(username);
         item.appendChild(messageItem);

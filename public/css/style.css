@@ -111,3 +111,21 @@ button:not(:hover),
   -o-transition: ease-in-out 0.3s all;
 }
 
+#messages {
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.message-item {
+  margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.message-item:nth-child(odd) {
+  justify-content: flex-start;
+}
+
+.message-item:nth-child(even) {
+  justify-content: flex-end;
+}

@@ -46,6 +46,8 @@ const users = [
   { username: 'Jane Doe', password: 'user', nickname: 'janedoe'}
 ]
 
+const messages = [];
+
 // define a route handler for the default home page
 app.get('/', (req, res) => {
   res.render('home', {
@@ -63,7 +65,8 @@ app.get('/chat', (req, res) => {
     room: req.cookies.user.room,
     user: {
       username: req.cookies.user.username
-    }
+    },
+    messages: messages,
   })
 })
 
@@ -124,6 +127,11 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', msg => {
     console.log("Newest message:", msg)
+    messages.push({
+      username: msg.username,
+      message: msg,
+      room: socket.room
+    })
     io.emit('chat message', msg);
   });
 });
