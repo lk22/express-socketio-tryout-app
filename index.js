@@ -62,17 +62,17 @@ app.get('/chat', (req, res) => {
 app.post('/auth', (req, res) => {
 
   if ( !req.body.username || req.body.username === '' ) {
-    return {
+    res.send({
       code: 400,
       message: 'Username is required'
-    }
+    })
   }
 
   if ( !req.body.password || req.body.password === '' ) {
-    return {
+    res.send({
       code: 400,
       message: 'Password is required'
-    }
+    })
   }
 
   res.cookie('auth', true);
@@ -85,11 +85,14 @@ app.post('/auth', (req, res) => {
   // get auth cookie value
   const authCookie = req.cookies.auth;
   console.log(authCookie)
-  return {
+  res.send({
     code: 200,
+    status: {
+      success: true
+    },
     message: 'User authenticated successfully',
     cookie: authCookie
-  }
+  })
 });
 
 io.on('connection', (socket) => {
