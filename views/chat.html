@@ -1,80 +1,111 @@
 <%- include('partials/head.html') -%>
-<strong><%= user.username %></strong>
 
 <main>
   <div id="chat-wrapper">
-    <!-- 
-
-    -->
-    <ul id="messages">
-      <!-- loop through messages in ejs-->
-      <% messages.forEach(message => { %>
-        <div class="message-item">
-          <span class="username"><%= message.username %></span>
-          <div class="message"><%= message.message.message %></div>
+    <div class="chat-header">
+      <h2>Chat</h2>
+      <p>Welcome <%= user.username %></p>
+      <button class="logout-btn">Logout</button>
+    </div>
+    <div class="chat-body">
+      <div class="chat-sidebar">
+        <div class="room-users">
+          <h3>Users</h3>
+          <ul>
+            <% users.forEach(user => { %>
+              <li class="chat-user">
+                <div class="user-avatar">
+                  <img src="<%= user.meta.avatar %>" alt="user avatar" />
+                  <span class="user-status-identifier"></span>
+                </div>
+                <div class="user-info">
+                  <div class="username"><%- user.username %></div>
+                  <div class="user-position"><%- user.meta.position %></div>
+                </div>
+              </li>
+              <% }) %>
+          </ul>
         </div>
-      <% }) %>
-    </ul>
-        <form id="form" action="">
-          <input id="input" autocomplete="off" aria-label="chat message"/>
-          <button>Send</button>
-        </form>
+      </div>
+      <div class="chat-messages-wrapper">
+        <div class="chat-messages">
+          <div class="messages-body">
+            <ul id="messages">
+              <!-- loop through messages in ejs-->
+              <% messages.forEach(message => { %>
+              <div class="message-item">
+                <span class="username"><%= message.username %></span>
+                <div class="message"><%= message.message.message %></div>
+              </div>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="messages-footer">
+            <div class="messages-form">
+              <form id="form" action="">
+                <input id="input" autocomplete="off" aria-label="chat message" />
+                <button>Send</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
-    <button class="logout-btn">Logout</button>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      const socket = io();
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
 
-      const {user} = JSON.parse(window.localStorage.getItem('auth'));
-      console.log({user})
+  const { user } = JSON.parse(window.localStorage.getItem("auth"));
+  console.log({ user });
 
-      const messages = document.getElementById('messages');
-      const form = document.getElementById('form');
-      const input = document.getElementById('input');
-      const logoutBtn = document.querySelector('.logout-btn');
+  const messages = document.getElementById("messages");
+  const form = document.getElementById("form");
+  const input = document.getElementById("input");
+  const logoutBtn = document.querySelector(".logout-btn");
 
-      
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    console.log(input.value);
+    if (input.value) {
+      socket.emit("chat message", {
+        message: input.value,
+        username: user.username,
+      });
+      input.value = "";
+    }
+  });
 
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        console.log(input.value)
-        if (input.value) {
-          socket.emit('chat message', {message: input.value, username: user.username});
-          input.value = '';
-        }
-      })
+  logoutBtn.addEventListener("click", function (e) {
+    fetch("/logout", {
+      method: "POST",
+    }).then((response) => {
+      if (response.status.success) {
+        window.localStorage.removeItem("auth");
+        window.location.href = "/";
+      } else {
+        alert("Something went wrong, could not log out");
+      }
+    });
+  });
 
-      logoutBtn.addEventListener('click', function(e) {
-        fetch('/logout', {
-          method: 'POST',
-        }).then((response) => {
-          if ( response.status.success ) {
-            window.localStorage.removeItem('auth');
-            window.location.href = '/';
-          } else {
-            alert('Something went wrong, could not log out');
-          }
-        })
-      })
+  socket.on("chat message", function (msg) {
+    let item = document.createElement("div");
+    item.classList.add("message-item");
+    let username = document.createElement("span");
+    username.classList.add("username");
+    username.textContent = msg.username;
+    let messageItem = document.createElement("div");
+    messageItem.classList.add("message");
+    messageItem.textContent = msg.message;
 
-      socket.on('chat message', function(msg) {
+    item.appendChild(username);
+    item.appendChild(messageItem);
 
-        let item = document.createElement('div');
-        item.classList.add('message-item');
-        let username = document.createElement('span');
-        username.classList.add('username');
-        username.textContent = msg.username;
-        let messageItem = document.createElement('div');
-        messageItem.classList.add('message');
-        messageItem.textContent = msg.message;
-        
-        item.appendChild(username);
-        item.appendChild(messageItem);
-
-        messages.appendChild(item)
-        window.scrollTo(0, document.body.scrollHeight)
-      })
-    </script>
-  <%- include('partials/foot.html') -%>
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+</script>
+<%- include('partials/foot.html') -%>
